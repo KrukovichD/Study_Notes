@@ -1,60 +1,129 @@
 package com.geekbrains.study_notes.presentation.list
 
+import android.content.res.Configuration
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.RecyclerView
 import com.geekbrains.study_notes.R
+import com.geekbrains.study_notes.data.NoteListItem
+import com.geekbrains.study_notes.databinding.FragmentNoteListBinding
+import com.geekbrains.study_notes.databinding.ListItemNoteBinding
+import com.geekbrains.study_notes.presentation.details.NoteDetailsFragment
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [NoteListFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class NoteListFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private var _binding: FragmentNoteListBinding? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+    private val viewModel: NoteListViewModel by activityViewModels()
+
+    private val recyclerViewAdapter = RecyclerViewAdapter()
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentNoteListBinding.inflate(inflater, container, false)
+
+        return _binding!!.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        Log.d("fs", "onViewCreated")
+        _binding!!.list.adapter = recyclerViewAdapter
+
+        viewModel.getList()
+
+
+        recyclerViewAdapter.onItemClickListener = {
+            Log.d("fs", "onClick")
+            viewModel.getNoteById(it.id)
+            launchNoteDetailsFragment()
+        }
+
+        viewModel.notes.observe(viewLifecycleOwner
+        ) {
+            if (it != null) {
+                recyclerViewAdapter.setItems(it)
+            }
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_note_list, container, false)
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment NoteListFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            NoteListFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    private fun launchNoteDetailsFragment() {
+        if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.container_detail, NoteDetailsFragment.newInstance())
+                .addToBackStack(null)
+                .commit()
+        } else {
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.container, NoteDetailsFragment.newInstance())
+                .commit()
+        }
+    }
+
+    companion object
+}
+
+private class RecyclerViewAdapter : RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>() {
+
+    private val items = mutableListOf<NoteListItem>()
+    var onItemClickListener: ((NoteListItem) -> Unit)? = null
+
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ) = ViewHolder(
+        ListItemNoteBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
+        )
+    )
+
+    override fun onBindViewHolder(
+        holder: ViewHolder,
+        position: Int
+    ) {
+        holder.binding.linearLayout.setOnClickListener {
+            onItemClickListener?.invoke(items[position])
+        }
+        holder.bind(items[position])
+    }
+
+    override fun getItemCount() = items.size
+
+    fun setItems(
+        items: List<NoteListItem>
+    ) {
+        this.items.clear()
+        this.items.addAll(items)
+        notifyDataSetChanged()
+    }
+
+    class ViewHolder(
+        val binding: ListItemNoteBinding
+    ) : RecyclerView.ViewHolder(
+        binding.root
+    ) {
+
+        fun bind(
+            note: NoteListItem
+        ) = with(binding) {
+            titleLabel.text = note.title
+            dateLabel.text = note.date
+        }
+
     }
 }
