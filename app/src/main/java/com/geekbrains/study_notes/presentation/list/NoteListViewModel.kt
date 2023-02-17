@@ -12,7 +12,7 @@ class NoteListViewModel : ViewModel() {
     val _note: MutableLiveData<NoteListItem> = MutableLiveData()
 
     val notes: LiveData<List<NoteListItem>?> = _notes
-    //val note: LiveData<NoteListItem> = _note
+    var note: LiveData<NoteListItem> = _note
 
     fun getList() {
         _notes.postValue(getListNoteListitem())

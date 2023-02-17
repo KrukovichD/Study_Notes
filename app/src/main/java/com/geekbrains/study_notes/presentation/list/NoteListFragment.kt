@@ -3,12 +3,11 @@ package com.geekbrains.study_notes.presentation.list
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.geekbrains.study_notes.R
 import com.geekbrains.study_notes.data.NoteListItem
@@ -18,7 +17,6 @@ import com.geekbrains.study_notes.presentation.details.NoteDetailsFragment
 
 class NoteListFragment : Fragment() {
     private var _binding: FragmentNoteListBinding? = null
-
     private val viewModel: NoteListViewModel by activityViewModels()
 
     private val recyclerViewAdapter = RecyclerViewAdapter()
@@ -37,7 +35,6 @@ class NoteListFragment : Fragment() {
 
         Log.d("fs", "onViewCreated")
         _binding!!.list.adapter = recyclerViewAdapter
-
         viewModel.getList()
 
 
@@ -63,7 +60,7 @@ class NoteListFragment : Fragment() {
     private fun launchNoteDetailsFragment() {
         if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.container_detail, NoteDetailsFragment.newInstance())
+                .replace(R.id.containerDetail, NoteDetailsFragment.newInstance())
                 .addToBackStack(null)
                 .commit()
         } else {

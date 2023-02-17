@@ -34,7 +34,7 @@ class NoteDetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel._note.observe(viewLifecycleOwner) {
+        viewModel.note.observe(viewLifecycleOwner) {
             _binding.textViewTitle.text = it.title
             _binding.textViewContent.text = it.content
             _binding.textViewDate.text = it.date

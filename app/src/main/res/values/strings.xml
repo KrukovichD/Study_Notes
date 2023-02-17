@@ -1,5 +1,11 @@
 <resources>
     <string name="app_name">Study_Notes</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="about">О программе</string>
+    <string name="exit">Выход</string>
+    <string name="user">Пользователь</string>
+    <string name="action_settings">Настройки</string>
+    <string name="text_from_me">Не делал на Java, т.к. на ней у меня такое приложение есть, задачей было приобретение практических навыков
+    использования того, что уже знаю по Kotlin, да временами костыльно, но времени толково сделать нет</string>
+    <string name="ok">OK</string>
+    <string name="userName">Денис Михайлович</string>
 </resources>
